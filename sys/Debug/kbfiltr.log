@@ -1,0 +1,22 @@
+﻿  Building 'kbfiltr' with toolset 'WindowsKernelModeDriver10.0' and the 'Desktop' target platform.
+  Stamping Debug\kbfiltr.inf [Version] section with DriverVer=11/21/2017,17.36.44.70
+  kbfiltr.c
+  kbfiltr.vcxproj -> D:\STUDIA\V\Oprogramowanie Systemowe\Windows-driver-samples\input\kbfiltr\sys\Debug\kbfiltr.sys
+  kbfiltr.vcxproj -> Debug\kbfiltr.pdb (Full PDB)
+  Done Adding Additional Store
+  Successfully signed: D:\STUDIA\V\Oprogramowanie Systemowe\Windows-driver-samples\input\kbfiltr\sys\Debug\kbfiltr.sys
+  
+  .........................
+  Signability test complete.
+  
+  Errors:
+  None
+  
+  Warnings:
+  None
+  
+  Catalog generation complete.
+  D:\STUDIA\V\Oprogramowanie Systemowe\Windows-driver-samples\input\kbfiltr\sys\Debug\kbfiltr\kmdfsamples.cat
+  Done Adding Additional Store
+  Successfully signed: Debug\kbfiltr\kmdfsamples.cat
+  

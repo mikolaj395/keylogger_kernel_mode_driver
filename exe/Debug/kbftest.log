@@ -1,0 +1,4 @@
+﻿  Building 'kbftest' with toolset 'WindowsApplicationForDrivers10.0' and the 'Desktop' target platform.
+  kbftest.c
+  kbftest.vcxproj -> D:\STUDIA\V\Oprogramowanie Systemowe\Windows-driver-samples\input\kbfiltr\exe\Debug\kbftest.exe
+  kbftest.vcxproj -> Debug\kbftest.pdb (Full PDB)
