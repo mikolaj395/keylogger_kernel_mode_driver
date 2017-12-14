@@ -989,7 +989,14 @@ WorkRoutine(PVOID Parameter)
 		ByteOffset.LowPart = FILE_WRITE_TO_END_OF_FILE;
 
 		if (NT_SUCCESS(ntstatus)) {
-			ntstatus = RtlStringCbPrintfA(buffer, sizeof(buffer), "This is %d test\r\n", 0x0);
+			if (OsrWorkItem->Flags == KEY_MAKE) {
+				ntstatus = RtlStringCbPrintfA(buffer, sizeof(buffer), "scan code: 0x%0x KEY_MAKE\r\n", OsrWorkItem->MakeCode);
+			}
+			else
+			{
+				ntstatus = RtlStringCbPrintfA(buffer, sizeof(buffer), "scan code: 0x%0x KEY_BREAK\r\n", OsrWorkItem->MakeCode);
+			}
+			
 			if (NT_SUCCESS(ntstatus)) {
 				ntstatus = RtlStringCbLengthA(buffer, sizeof(buffer), &cb);
 				if (NT_SUCCESS(ntstatus)) {
