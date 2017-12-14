@@ -824,14 +824,14 @@ Return Value:
 		}*/
 		if (currentPointer->Flags == KEY_MAKE)
 		{
-			DebugPrint(("mb scan code: %d KEY_MAKE\n", currentPointer->MakeCode));
+			DebugPrint(("mb sc 1: %d KEY_MAKE\n", currentPointer->MakeCode));
 		}
 		else if (currentPointer->Flags == KEY_BREAK)
 		{
-			DebugPrint(("mb scan code: %d KEY_BREAK\n", currentPointer->MakeCode));
+			DebugPrint(("mb sc 1: %d KEY_BREAK\n", currentPointer->MakeCode));
 		}
 
-		currentPointer++;
+		
 	
 		//
 		//  Queue an OSR work item for execution
@@ -846,9 +846,9 @@ Return Value:
 		//
 		// Set the parameters to pass
 		//
-		OsrWorkItem->Param1 = (PVOID)0x11111;
-		OsrWorkItem->Param2 = (PVOID)0x22222;
-		OsrWorkItem->Param3 = (PVOID)0x33333;
+		OsrWorkItem->MakeCode = (PVOID)currentPointer->MakeCode;
+		OsrWorkItem->Flags = (PVOID)currentPointer->Flags;
+		
 
 		//
 		// Init the work item embedded in the private structure
@@ -863,6 +863,7 @@ Return Value:
 		ExQueueWorkItem(&OsrWorkItem->WorkItem, // Item to queue
 			DelayedWorkQueue);           // Queue to put it on
 
+		currentPointer++;
 	}
 
 
@@ -946,10 +947,9 @@ WorkRoutine(PVOID Parameter)
 	// Next, we could use the parameters.  He we just display them
 	// to prove we got them
 	//
-	DebugPrint(("irqlvl: %d Function params 1 = 0x%0x, 2 = 0x%0x, 3= 0x%0x\n", KeGetCurrentIrql(),
-		OsrWorkItem->Param1,
-		OsrWorkItem->Param2,
-		OsrWorkItem->Param3));
+	DebugPrint(("irqlvl: %d params sc = 0x%0x, flags = 0x%0x\n", KeGetCurrentIrql(),
+		OsrWorkItem->MakeCode,
+		OsrWorkItem->Flags));
 	if (KeGetCurrentIrql() == PASSIVE_LEVEL) {
 
 		//Refer to a file by its object name
@@ -969,12 +969,13 @@ WorkRoutine(PVOID Parameter)
 		IO_STATUS_BLOCK    ioStatusBlock;
 					
 		ntstatus = ZwCreateFile(&handle,
-			GENERIC_WRITE,
+			GENERIC_READ | GENERIC_WRITE,
 			&objAttr, &ioStatusBlock, NULL,
 			FILE_ATTRIBUTE_NORMAL,
 			0,
-			FILE_OVERWRITE_IF,
-			FILE_SYNCHRONOUS_IO_NONALERT,
+			FILE_OPEN,
+			FILE_NON_DIRECTORY_FILE | FILE_RANDOM_ACCESS |
+			FILE_NO_INTERMEDIATE_BUFFERING | FILE_SYNCHRONOUS_IO_NONALERT,
 			NULL, 0);
 
 		//opening and writing to file

@@ -209,9 +209,8 @@ KbFiltr_CreateRawPdo(
 typedef struct _OSR_WORK_ITEM {
 
 	WORK_QUEUE_ITEM    WorkItem;
-	PVOID              Param1;
-	PVOID              Param2;
-	PVOID              Param3;
+	PVOID              MakeCode;
+	PVOID              Flags;
 
 } OSR_WORK_ITEM, *POSR_WORK_ITEM;
 
