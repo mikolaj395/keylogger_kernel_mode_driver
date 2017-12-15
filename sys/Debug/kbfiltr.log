@@ -1,6 +1,8 @@
 ﻿  Building 'kbfiltr' with toolset 'WindowsKernelModeDriver10.0' and the 'Desktop' target platform.
-  Stamping Debug\kbfiltr.inf [Version] section with DriverVer=12/14/2017,20.19.1.175
+  Stamping Debug\kbfiltr.inf [Version] section with DriverVer=12/15/2017,18.11.1.614
   kbfiltr.c
+  rawpdo.c
+  Generating Code...
   kbfiltr.vcxproj -> D:\STUDIA\V\Oprogramowanie Systemowe\Windows-driver-samples\input\kbfiltr\sys\Debug\kbfiltr.sys
   kbfiltr.vcxproj -> Debug\kbfiltr.pdb (Full PDB)
   Done Adding Additional Store
